@@ -4,6 +4,10 @@ import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
 import "../global.css";
 import { useEffect } from "react";
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
+
+const publishedKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -26,11 +30,13 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(root)" />
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <ClerkProvider publishableKey={publishedKey} tokenCache={tokenCache}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(root)" />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </ClerkProvider>
   );
 }
