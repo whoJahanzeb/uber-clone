@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 import React, { useState } from "react";
 import { icons, images } from "@/constants";
 import InputField from "@/components/InputField";
@@ -15,6 +7,7 @@ import { Link, useRouter } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import { ReactNativeModal } from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 const SignUp = () => {
   const [form, setForm] = useState({
     name: "",
@@ -69,12 +62,20 @@ const SignUp = () => {
       // If verification was completed, set the session to active
       // and redirect the user
       if (signUpAttempt.status === "complete") {
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: signUpAttempt.createdUserId,
+          }),
+        });
         await setActive({ session: signUpAttempt.createdSessionId });
         setVerification({
           ...verification,
           state: "success",
         });
-        router.replace("/(root)/(tabs)/home");
+        // router.replace("/(root)/(tabs)/home");
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.
